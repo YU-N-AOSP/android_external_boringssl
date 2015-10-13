@@ -137,6 +137,14 @@ OPENSSL_EXPORT int EVP_PKEY_id(const EVP_PKEY *pkey);
  * |EVP_PKEY_RSA2| will be turned into |EVP_PKEY_RSA|. */
 OPENSSL_EXPORT int EVP_PKEY_type(int nid);
 
+OPENSSL_EXPORT int EVP_PKEY_decrypt_old(unsigned char *dec_key,
+                        const unsigned char *enc_key,int enc_key_len,
+                        EVP_PKEY *private_key);
+
+OPENSSL_EXPORT int             EVP_PKEY_encrypt_old(unsigned char *enc_key,
+                        const unsigned char *key,int key_len,
+                        EVP_PKEY *pub_key);
+
 
 /* Getting and setting concrete public key types.
  *
@@ -646,6 +654,21 @@ OPENSSL_EXPORT int EVP_PKEY_CTX_get0_rsa_oaep_label(EVP_PKEY_CTX *ctx,
  * |EVP_PKEY| of that type. */
 #define EVP_PKEY_DH NID_dhKeyAgreement
 
+OPENSSL_EXPORT int EVP_OpenInit(EVP_CIPHER_CTX *ctx,const EVP_CIPHER *type,
+                const unsigned char *ek, int ekl, const unsigned char *iv,
+                EVP_PKEY *priv);
+
+OPENSSL_EXPORT int EVP_OpenFinal(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl);
+
+OPENSSL_EXPORT int EVP_SealInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type,
+		 unsigned char **ek, int *ekl, unsigned char *iv,
+		EVP_PKEY **pubk, int npubk);
+
+OPENSSL_EXPORT int EVP_SealFinal(EVP_CIPHER_CTX *ctx,unsigned char *out,int *outl);
+
+OPENSSL_EXPORT int EVP_CIPHER_CTX_rand_key(EVP_CIPHER_CTX *ctx, unsigned char *key);
+
+
 /* OpenSSL_add_all_algorithms does nothing. */
 OPENSSL_EXPORT void OpenSSL_add_all_algorithms(void);
 
@@ -704,6 +727,7 @@ struct evp_pkey_st {
 #define EVP_R_COMMAND_NOT_SUPPORTED 101
 #define EVP_R_DIFFERENT_KEY_TYPES 104
 #define EVP_R_DIFFERENT_PARAMETERS 105
+#define EVP_R_PUBLIC_KEY_NOT_RSA 106
 #define EVP_R_EXPECTING_AN_EC_KEY_KEY 107
 #define EVP_R_EXPECTING_A_DH_KEY 109
 #define EVP_R_EXPECTING_A_DSA_KEY 110
@@ -746,5 +770,13 @@ struct evp_pkey_st {
 #define EVP_R_PARAMETER_ENCODING_ERROR 152
 #define EVP_R_UNSUPPORTED_PUBLIC_KEY_TYPE 153
 #define EVP_R_UNSUPPORTED_SIGNATURE_TYPE 154
+#define EVP_F_EVP_PKEY_DECRYPT_OLD 155
+#define EVP_F_EVP_PKEY_ENCRYPT_OLD 156
+#define EVP_R_PUBLIC_KEY_NOT_RSA 157
+
+#define EVP_CIPH_RAND_KEY 200
+
+#define EVP_OpenUpdate(a,b,c,d,e)       EVP_DecryptUpdate(a,b,c,d,e)
+#define EVP_SealUpdate(a,b,c,d,e)       EVP_EncryptUpdate(a,b,c,d,e)
 
 #endif  /* OPENSSL_HEADER_EVP_H */
